@@ -1,75 +1,27 @@
-import {
-  cardTemplate,
-  cardsContainer,
-  popupImageElement,
-  popupImageTitle,
-  popupImage,
-  newCardNameInput,
-  newCardUrlInput,
-  popupNewCardElement,
-} from "../constants.js";
-import { openModal, closeModal } from "./modal.js";
+const cardsTemplate = document.querySelector("#card-template").content;
 
-export function createCard(
-  cardData,
-  { deleteCard, likeCard, openImage }
-) {
-  const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
-  const deleteButton = cardElement.querySelector(".card__delete-button");
+const getCard = (element, removeCard) => {
 
-  const cardTitle = cardElement.querySelector(".card__title");
+  const cardItem = cardsTemplate.querySelector('.card').cloneNode(true);
 
-  const cardImage = cardElement.querySelector(".card__image");
+  const cardImage = cardItem.querySelector('.card__image');
+  const cardContent = cardItem.querySelector('.card__title');
 
-  const likeButton = cardElement.querySelector(".card__like-button");
+  const cardDeleteButton = cardItem.querySelector('.card__delete-button');
 
-  cardImage.src = cardData.link;
-  cardImage.alt = cardData.alt;
-  cardTitle.textContent = cardData.name;
- 
+  cardImage.src = element.link;
+  cardImage.alt = element.name;
+  cardContent.textContent = element.name;
 
-  cardImage.addEventListener("click", () => openImage(cardData));
-  likeButton.addEventListener("click", likeCard);
-  deleteButton.addEventListener("click", () => deleteCard(cardElement));
+  cardDeleteButton.addEventListener('click', () => {
+    removeCard(cardItem);
+  });
 
-  return cardElement;
+  return cardItem;
 }
 
-export function deleteCard(cardData) {
-  cardData.remove();
+const removeCard = (element) => {
+  element.remove();
 }
 
-export function likeCard(evt) {
-  const card = evt.target;
-  card.classList.toggle("card__like-button_is-active");
-}
-
-export function openImage(cardData) {
-  openModal(popupImageElement);
-  popupImageTitle.textContent = cardData.name;
-  popupImage.src = cardData.link;
-  popupImage.alt = cardData.alt;
-}
-
-export function handleAddNewCard(evt) {
-  evt.preventDefault();
-
-  const newCard = {
-    name: newCardNameInput.value,
-    link: newCardUrlInput.value,
-    alt: "",
-  };
-
-  renderCard(newCard);
-  closeModal(popupNewCardElement);
-  evt.target.reset();
-}
-
-function prependCard(card, cardsContainer) {
-  cardsContainer.prepend(card);
-}
-
-function renderCard(cardData) {
-  const card = createCard(cardData, { deleteCard, likeCard, openImage });
-  prependCard(card, cardsContainer);
-}
+export { getCard, removeCard };
