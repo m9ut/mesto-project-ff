@@ -5,12 +5,8 @@ function handleEscape(event) {
 }
 
 function handleClick(event) {
-  if (event.target.closest(".popup__close")) {
-    closeModal(event.target.closest(".popup"));
-  }
-
-  if (event.target.classList.contains("popup_is-opened")) {
-    closeModal(event.target);
+  if (event.target.classList.contains(".popup__close") || event.target.classList.contains("popup_is-opened")) {
+     closeModal(event.currentTarget);
   }
 }
 

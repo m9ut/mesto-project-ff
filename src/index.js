@@ -2,7 +2,7 @@ import "./pages/index.css";
 
 import { initialCards } from "./components/cards.js";
 
-import { createCard, deleteCard, getLike } from "./components/card.js";
+import { createCard, deleteCard, toggleLike } from "./components/card.js";
 
 import {
   profileEditButton,
@@ -43,7 +43,7 @@ profilePopup.addEventListener("click", handleClick);
 profileForm.addEventListener("submit", handleProfileFormSubmit);
 
 function addCard(element) {
-  cardsContainer.append(createCard(element, deleteCard, getLike, openImg));
+  cardsContainer.append(createCard(element, deleteCard, toggleLike, openImg));
 }
 
 initialCards.forEach((element) => addCard(element));
@@ -54,18 +54,18 @@ addCardButton.addEventListener("click", () => {
 
 cardPopup.addEventListener("click", handleClick);
 
-function getCard(event) {
+function newCardSubmit(event) {
   event.preventDefault();
   const cardInfo = {
     name: cardName.value,
     link: cardLink.value,
   };
-  cardsContainer.prepend(createCard(cardInfo, deleteCard, getLike, openImg));
+  cardsContainer.prepend(createCard(cardInfo, deleteCard, toggleLike, openImg));
   cardForm.reset();
   closeModal(cardPopup);
 }
 
-cardForm.addEventListener("submit", getCard);
+cardForm.addEventListener("submit", newCardSubmit);
 
 function openImg(event) {
   imageItem.src = event.target.src;
