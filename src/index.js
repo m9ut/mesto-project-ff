@@ -1,36 +1,44 @@
-import './pages/index.css';
-import { initialCards } from './components/cards.js'
-import { getCard, removeCard, likeCard } from './components/card.js'
-import { handleClick, openModal, closeModal } from './components/modal.js'
-import { enableValidation, clearValidation } from './components/validation.js';
-import { getUserData, updateUserData, updateUserImage, getInitialCards, postNewCard, deleteCard, addLike, deleteLike } from './components/api.js'
+import "./pages/index.css";
 
-const placesList = document.querySelector('.places__list');
+import { createCard, deleteCard, toggleLike } from "./components/card.js";
+import { handleClick, openModal, closeModal } from "./components/modal.js";
+import { enableValidation, clearValidation } from "./components/validation.js";
+import {
+  getUserData,
+  updateUserData,
+  updateProfileImage,
+  getInitialCards,
+  postNewCard,
+  removeCard,
+  tagLike,
+  removeLike,
+} from "./components/api.js";
 
-const profileEditButton = document.querySelector('.profile__edit-button');
-const profilePopup = document.querySelector('.popup_type_edit');
-const profileForm = document.forms['edit-profile'];
-const profileNameInput = profileForm.elements.name;
-const profileJobInput = profileForm.elements.description;
-const profileNameContent = document.querySelector('.profile__title');
-const profileJobContent = document.querySelector('.profile__description');
+import {
+  profileEditButton,
+  profilePopup,
+  profileForm,
+  profileName,
+  profileJob,
+  profileNameContent,
+  profileJobContent,
+  addCardButton,
+  cardPopup,
+  cardForm,
+  cardName,
+  cardLink,
+  imageItem,
+  imagePopup,
+  imageSign,
+  profileImageButton, 
+  profileImagePopup, 
+  profileImageForm,
+  profileImage
+} from "./components/constants.js";
 
-const userImageButton = document.querySelector('.profile__image_overlay')
-const userImagePopup = document.querySelector('.popup_type_user-image');
-const userImageForm = document.forms['edit-user-image'];
-const userImage = document.querySelector('.profile__image'); 
+const placesList = document.querySelector(".places__list");
 
-const cardAddButton = document.querySelector('.profile__add-button');
-const cardPopup = document.querySelector('.popup_type_new-card');
-const cardForm = document.forms['new-place'];
-const cardNameInput = document.querySelector('.popup__input_type_card-name'); 
-const cardLinkInput = document.querySelector('.popup__input_type_url');
-
-const imageItem = document.querySelector('.popup__image');
-const imagePopup = document.querySelector('.popup_type_image');
-const imageCaption = document.querySelector('.popup__caption');
-
-let userId = '';
+let userId = "";
 
 const validationConfig = {
   formSelector: ".popup__form",
@@ -42,138 +50,153 @@ const validationConfig = {
 };
 
 const showLoading = (isLoading, buttonElement) => {
-  if (isLoading){
-    buttonElement.innerHTML = 'Сохранение...';
+  if (isLoading) {
+    buttonElement.innerHTML = "Сохранение...";
+  } else {
+    buttonElement.innerHTML = "Сохранить";
   }
-  else {
-    buttonElement.innerHTML ='Сохранить';
-  }
-}
+};
 
-const showCards = (element, removeCard, likeCard, openImage, userId) => {
-  const cardElement =  getCard(element, removeCard, likeCard, openImage, userId);
+const showCards = (element, deleteCard, toggleLike, openImg, userId) => {
+  const cardElement = createCard(
+    element,
+    deleteCard,
+    toggleLike,
+    openImg,
+    userId
+  );
   placesList.append(cardElement);
-}
+};
 
 const setProfilePopup = (formElement, name, description) => {
   formElement.name.value = name;
   formElement.description.value = description;
-}
+};
 
 const setProfileData = (userData) => {
   profileNameContent.textContent = userData.name;
   profileJobContent.textContent = userData.about;
-  userImage.style.backgroundImage = `url(${userData.avatar})`;
+  profileImage.style.backgroundImage = `url(${userData.avatar})`;
   userId = userData._id;
-}
+};
 
 const handleProfileFormSubmit = (event) => {
   event.preventDefault();
-  const profilePopupButton = profileForm.querySelector('.popup__button');
+  const profilePopupButton = profileForm.querySelector(".popup__button");
   showLoading(true, profilePopupButton);
   updateUserData({
-    name: profileNameInput.value,
-    about: profileJobInput.value
+    name: profileName.value,
+    about: profileJob.value,
   })
-  .then((updateProfile) => {
-    setProfileData(updateProfile);
-    closeModal(profilePopup);
-  })
-  .catch((error) => {
-    console.log(error);
-  })
-  .finally(() => {
-    showLoading(false, profilePopupButton);
-  })
-}
+    .then((updateProfile) => {
+      setProfileData(updateProfile);
+      closeModal(profilePopup);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      showLoading(false, profilePopupButton);
+    });
+};
 
-profileEditButton.addEventListener('click', (event) => {
+profileEditButton.addEventListener("click", (event) => {
   clearValidation(profileForm, validationConfig);
-  setProfilePopup(profileForm, profileNameContent.textContent, profileJobContent.textContent);
+  setProfilePopup(
+    profileForm,
+    profileNameContent.textContent,
+    profileJobContent.textContent
+  );
   openModal(profilePopup);
-})
+});
 
-profilePopup.addEventListener('click', handleClick);
-profileForm.addEventListener('submit', handleProfileFormSubmit);
+profilePopup.addEventListener("click", handleClick);
+profileForm.addEventListener("submit", handleProfileFormSubmit);
 
-const handleUserImageFormSubmit = (event) => {
+const handleProfileImageFormSubmit = (event) => {
   event.preventDefault();
-  const userImagePopupButton = userImageForm.querySelector('.popup__button');
-  showLoading(true, userImagePopupButton);
-  updateUserImage(userImageForm.link.value)
-  .then((updateProfile) => {
-    setProfileData(updateProfile);
-    closeModal(userImagePopup);
-  })
-  .catch((error) => {
-    console.log(error);
-  })
-  .finally(() => {
-    showLoading(false, userImagePopupButton);
-  })
-}
+  const profileImagePopupButton = profileImageForm.querySelector(".popup__button");
+  showLoading(true, profileImagePopupButton);
+  updateProfileImage(profileImageForm.link.value)
+    .then((updateProfile) => {
+      setProfileData(updateProfile);
+      closeModal(profileImagePopup);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      showLoading(false, profileImagePopupButton);
+    });
+};
 
-userImageButton.addEventListener('click', (event) => {
-  userImageForm.reset();
-  clearValidation(userImageForm, validationConfig);
-  openModal(userImagePopup);
-})
+profileImageButton.addEventListener("click", (event) => {
+  profileImageForm.reset();
+  clearValidation(profileImageForm, validationConfig);
+  openModal(profileImagePopup);
+});
 
-userImagePopup.addEventListener('click', handleClick);
-userImageForm.addEventListener('submit', handleUserImageFormSubmit);
+profileImagePopup.addEventListener("click", handleClick);
+profileImageForm.addEventListener("submit", handleProfileImageFormSubmit);
 
-cardAddButton.addEventListener('click', (event)=> {
+addCardButton.addEventListener("click", (event) => {
   openModal(cardPopup);
 });
-cardPopup.addEventListener('click', handleClick);
+cardPopup.addEventListener("click", handleClick);
 
 const handleNewCardFormSubmit = (event) => {
   event.preventDefault();
-  const cardPopupButton = cardForm.querySelector('.popup__button');
+  const cardPopupButton = cardForm.querySelector(".popup__button");
   showLoading(true, cardPopupButton);
-  const name = cardNameInput.value;
-  const link = cardLinkInput.value;
+  const name = cardName.value;
+  const link = cardLink.value;
   postNewCard({ name, link })
-  .then((cardElement) => {
-    const newCard = getCard(cardElement, removeCard, likeCard, openImage, userId);
-    placesList.prepend(newCard);
-    closeModal(cardPopup);
-    cardForm.reset();
-  })
-  .catch((error) => {
-    console.log(error);
-  })
-  .finally(() => {
-    showLoading(false, cardPopupButton);
-  })
-}
+    .then((cardElement) => {
+      const newCard = createCard(
+        cardElement,
+        deleteCard,
+        toggleLike,
+        openImg,
+        userId
+      );
+      placesList.prepend(newCard);
+      closeModal(cardPopup);
+      cardForm.reset();
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      showLoading(false, cardPopupButton);
+    });
+};
 
-cardForm.addEventListener('submit', handleNewCardFormSubmit);
+cardForm.addEventListener("submit", handleNewCardFormSubmit);
 
-cardAddButton.addEventListener('click', () => {
+addCardButton.addEventListener("click", () => {
   cardForm.reset();
   clearValidation(cardForm, validationConfig);
   openModal(cardPopup);
-})
+});
 
 Promise.all([getUserData(), getInitialCards()])
-.then(([userData, element]) => {
-  setProfileData(userData);
-  element.forEach((cardElement) => {
-    showCards(cardElement, removeCard, likeCard, openImage, userId);
+  .then(([userData, element]) => {
+    setProfileData(userData);
+    element.forEach((cardElement) => {
+      showCards(cardElement, deleteCard, toggleLike, openImg, userId);
+    });
   })
-})
-.catch((error) => {
-  console.error('Did not get any data: ', error);
-})
+  .catch((error) => {
+    console.error("Did not get any data: ", error);
+  });
 
 enableValidation(validationConfig);
 
-const openImage = (event) => {
+const openImg = (event) => {
   imageItem.src = event.target.src;
   imageItem.alt = event.target.alt;
-  imageCaption.textContent = event.target.alt;
+  imageSign.textContent = event.target.alt;
   openModal(imagePopup);
-}
+};
 
-imagePopup.addEventListener('click', handleClick);
+imagePopup.addEventListener("click", handleClick);
