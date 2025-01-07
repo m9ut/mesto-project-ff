@@ -1,6 +1,7 @@
 # Проектная работа Mesto
 
 Ссылка на деплой GitHub Pages: https://m9ut.github.io/mesto-project-ff/
+
 Ссылка на репозиторий Github проекта: git@github.com:m9ut/mesto-project-ff
 
 Ссылка на макет проекта: https://www.figma.com/design/bjyvbKKJN2naO0ucURl2Z0/JavaScript.-Sprint-5?node-id=0-1&node-type=canvas

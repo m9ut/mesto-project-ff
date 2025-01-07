@@ -8,10 +8,7 @@ import {
   editProfile,
   updateAvatar,
   getInitialCards,
-  postNewCard,
-  removeCard,
-  tagLike,
-  removeLike,
+  postNewCard
 } from "./components/api.js";
 
 import {
@@ -40,14 +37,6 @@ const placesList = document.querySelector(".places__list");
 
 let userId = "";
 
-const showLoading = (isLoading, buttonElement) => {
-  if (isLoading) {
-    buttonElement.innerHTML = "Сохранение...";
-  } else {
-    buttonElement.innerHTML = "Сохранить";
-  }
-};
-
 const showCards = (element, deleteCard, toggleLike, openImg, userId) => {
   const cardElement = createCard(
     element,
@@ -71,10 +60,14 @@ const setProfileData = (userData) => {
   userId = userData._id;
 };
 
+const renderLoading = (isLoading, buttonElement) => {
+  buttonElement.textContent = isLoading ? "Сохранение..." : "Сохранить";
+};
+
 const handleProfileFormSubmit = (event) => {
   event.preventDefault();
   const profilePopupButton = profileForm.querySelector(".popup__button");
-  showLoading(true, profilePopupButton);
+  renderLoading(true, profilePopupButton);
   editProfile({
     name: profileName.value,
     about: profileJob.value,
@@ -87,18 +80,18 @@ const handleProfileFormSubmit = (event) => {
       console.log(error);
     })
     .finally(() => {
-      showLoading(false, profilePopupButton);
+      renderLoading(false, profilePopupButton);
     });
 };
 
 profileEditButton.addEventListener("click", (event) => {
+  openModal(profilePopup);
   clearValidation(profileForm, validationConfig);
   setProfilePopup(
     profileForm,
     profileNameContent.textContent,
     profileJobContent.textContent
   );
-  openModal(profilePopup);
 });
 
 profilePopup.addEventListener("click", handleClick);
@@ -107,7 +100,7 @@ profileForm.addEventListener("submit", handleProfileFormSubmit);
 const handleProfileImageFormSubmit = (event) => {
   event.preventDefault();
   const profileImagePopupButton = profileImageForm.querySelector(".popup__button");
-  showLoading(true, profileImagePopupButton);
+  renderLoading(true, profileImagePopupButton);
   updateAvatar(profileImageForm.link.value)
     .then((updateProfile) => {
       setProfileData(updateProfile);
@@ -117,14 +110,14 @@ const handleProfileImageFormSubmit = (event) => {
       console.log(error);
     })
     .finally(() => {
-      showLoading(false, profileImagePopupButton);
+      renderLoading(false, profileImagePopupButton);
     });
 };
 
 profileImageButton.addEventListener("click", (event) => {
-  profileImageForm.reset();
-  clearValidation(profileImageForm, validationConfig);
   openModal(profileImagePopup);
+  clearValidation(profileImageForm, validationConfig);
+  profileImageForm.reset();
 });
 
 profileImagePopup.addEventListener("click", handleClick);
@@ -132,13 +125,15 @@ profileImageForm.addEventListener("submit", handleProfileImageFormSubmit);
 
 addCardButton.addEventListener("click", (event) => {
   openModal(cardPopup);
+  clearValidation(cardPopup, validationConfig);
 });
+
 cardPopup.addEventListener("click", handleClick);
 
 const handleNewCardFormSubmit = (event) => {
   event.preventDefault();
   const cardPopupButton = cardForm.querySelector(".popup__button");
-  showLoading(true, cardPopupButton);
+  renderLoading(true, cardPopupButton);
   const name = cardName.value;
   const link = cardLink.value;
   postNewCard({ name, link })
@@ -158,7 +153,7 @@ const handleNewCardFormSubmit = (event) => {
       console.log(error);
     })
     .finally(() => {
-      showLoading(false, cardPopupButton);
+      renderLoading(false, cardPopupButton);
     });
 };
 
@@ -178,7 +173,7 @@ Promise.all([getUserData(), getInitialCards()])
     });
   })
   .catch((error) => {
-    console.error("Did not get any data: ", error);
+    console.error(error);
   });
 
 const openImg = (event) => {
