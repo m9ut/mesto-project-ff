@@ -5,16 +5,16 @@ const cardsTemplate = document.querySelector("#card-template").content;
 const createCard = (element, deleteCard, toggleLike, openImg, userId) => {
   const cardItem = cardsTemplate.querySelector(".card").cloneNode(true);
   const cardImage = cardItem.querySelector(".card__image");
-  const cardContent = cardItem.querySelector(".card__title");
+  const cardTitle = cardItem.querySelector(".card__title");
   const cardLikeButton = cardItem.querySelector(".card__like-button");
   const cardDeleteButton = cardItem.querySelector(".card__delete-button");
   const cardLikeCounter = cardItem.querySelector(".card__like-count");
 
   cardItem.dataset.cardId = element._id;
-  cardItem.dataset.ownerId = element.owner["_id"];
+  cardItem.dataset.ownerId = element.owner._id;
   cardImage.src = element.link;
   cardImage.alt = element.name;
-  cardContent.textContent = element.name;
+  cardTitle.textContent = element.name;
   cardLikeCounter.textContent = element.likes.length;
 
   const likeClicked = element.likes.some((like) => like._id === userId);
