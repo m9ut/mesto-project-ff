@@ -50,25 +50,15 @@ const deleteCard = (cardItem, cardId) => {
 };
 
 const toggleLike = (cardLikeCounter, cardLikeButton, cardId) => {
-  if (cardLikeButton.classList.contains("card__like-button_is-active")) {
-    removeLike(cardId)
-      .then((result) => {
-        cardLikeButton.classList.toggle("card__like-button_is-active");
-        cardLikeCounter.textContent = result.likes.length;
+  const likeMethod = cardLikeButton.classList.contains("card__like-button_is-active") ? removeLike : tagLike;
+likeMethod(cardId) 
+      .then((result) => { 
+        cardLikeButton.classList.toggle("card__like-button_is-active"); 
+        cardLikeCounter.textContent = result.likes.length; 
       })
-      .catch((error) => {
-        console.log(error);
-      });
-  } else {
-    tagLike(cardId)
-      .then((result) => {
-        cardLikeButton.classList.toggle("card__like-button_is-active");
-        cardLikeCounter.textContent = result.likes.length;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+.catch(err => console.log(err));
 };
+
+
 
 export { createCard, deleteCard, toggleLike };

@@ -8,7 +8,7 @@ const handleClick = (event) => {
 
 const openModal = (element) => {
   element.classList.add("popup_is-opened");
-  window.addEventListener("keydown", handleEscape);
+  document.addEventListener("keydown", handleEscape);
 };
 
 const closeModal = (element) => {
